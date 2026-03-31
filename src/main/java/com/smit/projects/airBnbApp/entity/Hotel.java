@@ -47,4 +47,7 @@ public class Hotel {
     @OneToMany(mappedBy = "hotel", fetch = FetchType.LAZY)
     private List<Room> room;
 
+    @ManyToOne
+    private User owner;
+
 }

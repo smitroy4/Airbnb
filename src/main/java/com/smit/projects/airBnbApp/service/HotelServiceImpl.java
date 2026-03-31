@@ -2,8 +2,8 @@ package com.smit.projects.airBnbApp.service;
 
 import com.smit.projects.airBnbApp.dto.HotelDto;
 import com.smit.projects.airBnbApp.entity.Hotel;
+import com.smit.projects.airBnbApp.exception.ResourceNotFoundException;
 import com.smit.projects.airBnbApp.repository.HotelRepository;
-import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
@@ -30,6 +30,32 @@ public class HotelServiceImpl implements HotelService{
 
     @Override
     public HotelDto getHotelById(Long id) {
-        return null;
+        log.info("Creating new hotel with id {}", id);
+        Hotel hotel = hotelRepository.findById(id)
+                .orElseThrow(()-> new ResourceNotFoundException("Hotel not found with ID: " + id));
+        HotelDto foundHotel = modelMapper.map(hotel, HotelDto.class);
+        return foundHotel;
+    }
+
+    @Override
+    public HotelDto updateHotelById(Long id, HotelDto hotelDto) {
+            log.info("Updating hotel with id {}", id);
+        Hotel hotel = hotelRepository.findById(id)
+                .orElseThrow(()-> new ResourceNotFoundException("Hotel not found with ID: " + id));
+        Hotel foundHotel = modelMapper.map(hotelDto, Hotel.class);
+//      HARD-CODED DUE TO UPDATE ERRORS
+        foundHotel.setId(id);
+        hotelRepository.save(foundHotel);
+        HotelDto foundHotelDto = modelMapper.map(foundHotel, HotelDto.class);
+        return foundHotelDto;
+    }
+
+    @Override
+    public Boolean deleteHotelById(Long id) {
+        Boolean exists = hotelRepository.existsById(id);
+        if(!exists) throw new ResourceNotFoundException("Hotel not found with ID: "+id);
+        hotelRepository.deleteById(id);
+//        TODO: delete the future inventories for this hotel
+        return true;
     }
 }
