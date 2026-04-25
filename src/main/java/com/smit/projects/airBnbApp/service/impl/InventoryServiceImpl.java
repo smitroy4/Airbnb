@@ -2,6 +2,7 @@ package com.smit.projects.airBnbApp.service.impl;
 
 import com.smit.projects.airBnbApp.dto.HotelDto;
 import com.smit.projects.airBnbApp.dto.HotelSearchRequest;
+import com.smit.projects.airBnbApp.entity.Hotel;
 import com.smit.projects.airBnbApp.entity.Inventory;
 import com.smit.projects.airBnbApp.entity.Room;
 import com.smit.projects.airBnbApp.repository.InventoryRepository;
@@ -17,12 +18,14 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 
 @Service
 @Slf4j
 @RequiredArgsConstructor
 public class InventoryServiceImpl implements InventoryService {
 
+    private final ModelMapper modelMapper;
     private final InventoryRepository inventoryRepository;
 
     @Override
@@ -55,7 +58,17 @@ public class InventoryServiceImpl implements InventoryService {
 
         Pageable pageable = PageRequest.of(hotelSearchRequest.getPage(),hotelSearchRequest.getSize());
 
+        long dateCount = ChronoUnit.DAYS.between(
+                hotelSearchRequest.getStartDate(),
+                hotelSearchRequest.getEndDate()) +1;
 
-        return null;
+        Page<Hotel> hotelPage =  inventoryRepository.findHotelsWithAvailableInventory(
+                hotelSearchRequest.getCity(),
+                hotelSearchRequest.getStartDate(),
+                hotelSearchRequest.getEndDate(),
+                hotelSearchRequest.getRoomsCount(),
+                dateCount, pageable);
+
+        return hotelPage.map((element) -> modelMapper.map(element,HotelDto.class));
     }
 }
