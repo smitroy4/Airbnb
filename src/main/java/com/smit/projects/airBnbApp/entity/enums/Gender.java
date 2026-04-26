@@ -1,7 +1,0 @@
-package com.smit.projects.airBnbApp.entity.enums;
-
-public enum Gender {
-    MALE,
-    FEMALE,
-    OTHERS
-}
