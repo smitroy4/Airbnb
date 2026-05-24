@@ -4,6 +4,7 @@ import com.smit.projects.stayGrid.dto.BookingDto;
 import com.smit.projects.stayGrid.dto.BookingRequest;
 import com.smit.projects.stayGrid.dto.GuestDto;
 import com.smit.projects.stayGrid.service.BookingService;
+import io.swagger.v3.oas.annotations.Operation;
 import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -35,6 +36,18 @@ public class HotelBookingController {
     public ResponseEntity<Map<String, String>> initiatePayment(@PathVariable Long bookingId){
         String sessionUrl = bookingService.initiatePayment(bookingId);
         return ResponseEntity.ok(Map.of("sessionUrl", sessionUrl));
+    }
+
+    @PostMapping("/{bookingId}/cancel")
+    @Operation(summary = "Cancel the booking", tags = {"Booking Flow"})
+    public ResponseEntity<Void> cancelBooking(@PathVariable Long bookingId) {
+        bookingService.cancelBooking(bookingId);
+        return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping("/{bookingId}/status")
+    public ResponseEntity<Map<String, String>> getBookingStatus(@PathVariable Long bookingId) {
+        return ResponseEntity.ok(Map.of("status", bookingService.getBookingStatus(bookingId)));
     }
 
 }
