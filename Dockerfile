@@ -1,17 +1,23 @@
+# =========================
 # Build Stage
+# =========================
 FROM maven:3.9.9-eclipse-temurin-21 AS builder
 
 WORKDIR /app
 
+# Cache dependencies
 COPY pom.xml .
+RUN mvn dependency:go-offline -B
 
-RUN mvn dependency:go-offline
-
+# Copy source only after dependencies are cached
 COPY src ./src
 
+# Build
 RUN mvn clean package -DskipTests
 
+# =========================
 # Runtime Stage
+# =========================
 FROM eclipse-temurin:21-jre
 
 WORKDIR /app
