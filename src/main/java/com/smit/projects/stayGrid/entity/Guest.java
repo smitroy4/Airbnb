@@ -4,6 +4,11 @@ import com.smit.projects.stayGrid.entity.enums.Gender;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
+
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Entity
 @Getter
@@ -25,11 +30,14 @@ public class Guest {
     @Column(nullable = false)
     private Gender gender;
 
-    @Column(nullable = false)
     private Integer age;
+    private LocalDate dateOfBirth;
 
-//    @ManyToMany
-//    private Set<Booking> booking;
+    @CreationTimestamp
+    private LocalDateTime createdAt;
+
+    @UpdateTimestamp
+    private LocalDateTime updatedAt;
 
 
 }

@@ -1,7 +1,11 @@
 package com.smit.projects.stayGrid.repository;
 
 import com.smit.projects.stayGrid.entity.Guest;
+import com.smit.projects.stayGrid.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import java.util.List;
+
 public interface GuestRepository extends JpaRepository<Guest, Long> {
+    List<Guest> findByUser(User user);
 }

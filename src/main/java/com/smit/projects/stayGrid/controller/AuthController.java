@@ -5,6 +5,7 @@ import com.smit.projects.stayGrid.dto.LoginResponseDto;
 import com.smit.projects.stayGrid.dto.SignUpRequestDto;
 import com.smit.projects.stayGrid.dto.UserDto;
 import com.smit.projects.stayGrid.security.AuthService;
+import io.swagger.v3.oas.annotations.Operation;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -27,23 +28,25 @@ public class AuthController {
     private final AuthService authService;
 
     @PostMapping("/signup")
-    public ResponseEntity<UserDto> signUp(@RequestBody SignUpRequestDto signUpRequestDto) {
+    @Operation(summary = "Create a new account", tags = {"Auth"})
+    public ResponseEntity<UserDto> signup(@RequestBody SignUpRequestDto signUpRequestDto) {
         return new ResponseEntity<>(authService.signUp(signUpRequestDto), HttpStatus.CREATED);
     }
 
     @PostMapping("/login")
-    public ResponseEntity<LoginResponseDto> login(@RequestBody LoginDto loginDto, HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse){
+    @Operation(summary = "Login request", tags = {"Auth"})
+    public ResponseEntity<LoginResponseDto> login(@RequestBody LoginDto loginDto, HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) {
         String[] tokens = authService.login(loginDto);
 
-        Cookie cookie = new Cookie("RefreshToken", tokens[1]);
+        Cookie cookie = new Cookie("refreshToken", tokens[1]);
         cookie.setHttpOnly(true);
 
         httpServletResponse.addCookie(cookie);
-
         return ResponseEntity.ok(new LoginResponseDto(tokens[0]));
     }
 
     @PostMapping("/refresh")
+    @Operation(summary = "Refresh the JWT with a refresh token", tags = {"Auth"})
     public ResponseEntity<LoginResponseDto> refresh(HttpServletRequest request) {
         String refreshToken = Arrays.stream(request.getCookies()).
                 filter(cookie -> "refreshToken".equals(cookie.getName()))

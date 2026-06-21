@@ -1,11 +1,9 @@
 package com.smit.projects.stayGrid.controller;
 
-import com.smit.projects.stayGrid.dto.HotelDto;
-import com.smit.projects.stayGrid.dto.HotelInfoDto;
-import com.smit.projects.stayGrid.dto.HotelPriceDto;
-import com.smit.projects.stayGrid.dto.HotelSearchRequest;
+import com.smit.projects.stayGrid.dto.*;
 import com.smit.projects.stayGrid.service.HotelService;
 import com.smit.projects.stayGrid.service.InventoryService;
+import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -22,14 +20,17 @@ public class HotelBrowseController {
     private final HotelService hotelService;
 
     @GetMapping("/search")
-    public ResponseEntity<Page<HotelPriceDto>> searchHotels(@RequestBody HotelSearchRequest hotelSearchRequest){
+    @Operation(summary = "Search hotels", tags = {"Browse Hotels"})
+    public ResponseEntity<Page<HotelPriceResponseDto>> searchHotels(@RequestBody HotelSearchRequest hotelSearchRequest) {
+
         var page = inventoryService.searchHotels(hotelSearchRequest);
         return ResponseEntity.ok(page);
     }
 
     @GetMapping("/{hotelId}/info")
-    public ResponseEntity<HotelInfoDto> getHotelInfo(@PathVariable Long hotelId){
-        return ResponseEntity.ok(hotelService.getHotelInfoById(hotelId));
+    @Operation(summary = "Get a hotel info by hotelId", tags = {"Browse Hotels"})
+    public ResponseEntity<HotelInfoDto> getHotelInfo(@PathVariable Long hotelId, @RequestBody HotelInfoRequestDto hotelInfoRequestDto) {
+        return ResponseEntity.ok(hotelService.getHotelInfoById(hotelId, hotelInfoRequestDto));
     }
 
 

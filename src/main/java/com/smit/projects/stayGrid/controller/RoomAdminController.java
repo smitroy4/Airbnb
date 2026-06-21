@@ -2,6 +2,7 @@ package com.smit.projects.stayGrid.controller;
 
 import com.smit.projects.stayGrid.dto.RoomDto;
 import com.smit.projects.stayGrid.service.RoomService;
+import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,30 +18,37 @@ public class RoomAdminController {
     private final RoomService roomService;
 
     @PostMapping
+    @Operation(summary = "Create a new room in a hotel", tags = {"Admin Inventory"})
     public ResponseEntity<RoomDto> createNewRoom(@PathVariable Long hotelId,
-                                                 @RequestBody RoomDto roomDto){
-        RoomDto createdRoom = roomService.createNewRoom(hotelId, roomDto);
-        return new ResponseEntity<>(createdRoom, HttpStatus.CREATED);
+                                                 @RequestBody RoomDto roomDto) {
+        RoomDto room = roomService.createNewRoom(hotelId, roomDto);
+        return new ResponseEntity<>(room, HttpStatus.CREATED);
     }
 
     @GetMapping
-    public ResponseEntity<List<RoomDto>> getRoomsByHotelId(@PathVariable Long hotelId){
-        List<RoomDto> listOfRoomsInHotel = roomService.getRoomsByHotelId(hotelId);
-        return ResponseEntity.ok(listOfRoomsInHotel);
+    @Operation(summary = "Get all rooms in a hotel", tags = {"Admin Inventory"})
+    public ResponseEntity<List<RoomDto>> getAllRoomsInHotel(@PathVariable Long hotelId) {
+        return ResponseEntity.ok(roomService.getRoomsByHotelId(hotelId));
     }
 
     @GetMapping("/{roomId}")
-    public ResponseEntity<RoomDto> getRoomById(@PathVariable Long hotelId,
-                                               @PathVariable Long roomId){
-        RoomDto foundRoomInHotel = roomService.getRoomById(roomId);
-        return ResponseEntity.ok(foundRoomInHotel);
+    @Operation(summary = "Get a room by id", tags = {"Admin Inventory"})
+    public ResponseEntity<RoomDto> getRoomById(@PathVariable Long hotelId, @PathVariable Long roomId) {
+        return ResponseEntity.ok(roomService.getRoomById(roomId));
     }
 
     @DeleteMapping("/{roomId}")
-    public ResponseEntity<RoomDto> deleteRoomById(@PathVariable Long hotelId,
-                                                  @PathVariable Long roomId){
+    @Operation(summary = "Delete a room by id", tags = {"Admin Inventory"})
+    public ResponseEntity<RoomDto> deleteRoomById(@PathVariable Long hotelId, @PathVariable Long roomId) {
         roomService.deleteRoomById(roomId);
         return ResponseEntity.noContent().build();
+    }
+
+    @PutMapping("/{roomId}")
+    @Operation(summary = "Update a room", tags = {"Admin Inventory"})
+    public ResponseEntity<RoomDto> updateRoomById(@PathVariable Long hotelId, @PathVariable Long roomId,
+                                                  @RequestBody RoomDto roomDto) {
+        return ResponseEntity.ok(roomService.updateRoomById(hotelId, roomId, roomDto));
     }
 
 }

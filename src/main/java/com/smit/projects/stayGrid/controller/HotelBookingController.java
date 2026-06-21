@@ -1,8 +1,6 @@
 package com.smit.projects.stayGrid.controller;
 
-import com.smit.projects.stayGrid.dto.BookingDto;
-import com.smit.projects.stayGrid.dto.BookingRequest;
-import com.smit.projects.stayGrid.dto.GuestDto;
+import com.smit.projects.stayGrid.dto.*;
 import com.smit.projects.stayGrid.service.BookingService;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.AllArgsConstructor;
@@ -19,23 +17,24 @@ import java.util.Map;
 public class HotelBookingController {
 
     private final BookingService bookingService;
-
     @PostMapping("/init")
-    public ResponseEntity<BookingDto> initializeBooking(@RequestBody BookingRequest bookingRequest){
-        return ResponseEntity.ok(bookingService.initializeBooking(bookingRequest));
+    @Operation(summary = "Initiate the booking", tags = {"Booking Flow"})
+    public ResponseEntity<BookingDto> initialiseBooking(@RequestBody BookingRequest bookingRequest) {
+        return ResponseEntity.ok(bookingService.initialiseBooking(bookingRequest));
     }
 
     @PostMapping("/{bookingId}/addGuests")
-    public ResponseEntity<BookingDto> addGuests(
-                                                @PathVariable Long bookingId,
-                                                @RequestBody List<GuestDto> guestDtoList){
-        return ResponseEntity.ok(bookingService.addGuests(bookingId, guestDtoList));
+    @Operation(summary = "Add guest Ids to the booking", tags = {"Booking Flow"})
+    public ResponseEntity<BookingDto> addGuests(@PathVariable Long bookingId,
+                                                @RequestBody List<Long> guestIdList) {
+        return ResponseEntity.ok(bookingService.addGuests(bookingId, guestIdList));
     }
 
     @PostMapping("/{bookingId}/payments")
-    public ResponseEntity<Map<String, String>> initiatePayment(@PathVariable Long bookingId){
-        String sessionUrl = bookingService.initiatePayment(bookingId);
-        return ResponseEntity.ok(Map.of("sessionUrl", sessionUrl));
+    @Operation(summary = "Initiate payments flow for the booking", tags = {"Booking Flow"})
+    public ResponseEntity<BookingPaymentInitResponseDto> initiatePayment(@PathVariable Long bookingId) {
+        String sessionUrl = bookingService.initiatePayments(bookingId);
+        return ResponseEntity.ok(new BookingPaymentInitResponseDto(sessionUrl));
     }
 
     @PostMapping("/{bookingId}/cancel")
@@ -45,9 +44,10 @@ public class HotelBookingController {
         return ResponseEntity.noContent().build();
     }
 
-    @PostMapping("/{bookingId}/status")
-    public ResponseEntity<Map<String, String>> getBookingStatus(@PathVariable Long bookingId) {
-        return ResponseEntity.ok(Map.of("status", bookingService.getBookingStatus(bookingId)));
+    @GetMapping("/{bookingId}/status")
+    @Operation(summary = "Check the status of the booking", tags = {"Booking Flow"})
+    public ResponseEntity<BookingStatusResponseDto> getBookingStatus(@PathVariable Long bookingId) {
+        return ResponseEntity.ok(new BookingStatusResponseDto(bookingService.getBookingStatus(bookingId)));
     }
 
 }
