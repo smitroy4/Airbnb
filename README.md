@@ -6,7 +6,7 @@
   <img src="https://img.shields.io/badge/PostgreSQL-Neon-4169E1?style=for-the-badge&logo=postgresql&logoColor=white" />
   <img src="https://img.shields.io/badge/Stripe-Payment-635BFF?style=for-the-badge&logo=stripe&logoColor=white" />
   <img src="https://img.shields.io/badge/Docker-Containerized-2496ED?style=for-the-badge&logo=docker&logoColor=white" />
-  <img src="https://img.shields.io/badge/Railway-Deployed-0B0D0E?style=for-the-badge&logo=railway&logoColor=white" />
+  <img src="https://img.shields.io/badge/Render-Deployed-0B0D0E?style=for-the-badge&logo=Render&logoColor=white" />
 </p>
 
 <p align="center">
@@ -20,7 +20,7 @@
 | Resource | URL |
 |---|---|
 | Frontend Application | [https://stay-grid.vercel.app](https://stay-grid.vercel.app) |
-| Backend API (Railway) | [https://stay-grid.up.railway.app/api/v1](https://stay-grid.up.railway.app/api/v1) |
+| Backend API (Render) | [https://staygrid-b02y.onrender.com](https://staygrid-b02y.onrender.com/api/v1) |
 
 ---
 
@@ -71,7 +71,7 @@ Prices are not static. A **scheduled pricing engine** runs hourly and recalculat
 | API Docs | SpringDoc OpenAPI (Swagger UI) |
 | Build Tool | Maven |
 | Containerization | Docker (multi-stage build) |
-| Deployment | Railway |
+| Deployment | Render |
 | Frontend | React + Vite (deployed on Vercel) |
 
 ---
@@ -86,7 +86,7 @@ Prices are not static. A **scheduled pricing engine** runs hourly and recalculat
                       │  HTTPS
 ┌─────────────────────▼───────────────────────────────────────────┐
 │                    Spring Boot Application                       │
-│                   (Railway — Docker Container)                   │
+│                   (Render — Docker Container)                   │
 │                                                                 │
 │  ┌──────────────┐   ┌──────────────┐   ┌──────────────────────┐ │
 │  │  Controllers │──▶│   Services   │──▶│    Repositories      │ │
@@ -253,7 +253,7 @@ src/main/java/com/smit/projects/stayGrid/
 
 ## API Reference
 
-All endpoints are prefixed with `/api/v1`. Full interactive documentation is available at the [Swagger UI](https://stay-grid.up.railway.app/api/v1/swagger-ui/index.html).
+All endpoints are prefixed with `/api/v1`. Full interactive documentation is available at the [Swagger UI](https://staygrid-b02y.onrender.com/api/v1/swagger-ui/index.html).
 
 ### Authentication — `/auth`
 
@@ -578,17 +578,17 @@ docker run -p 8080:8080 \
 
 ## Deployment
 
-The backend is deployed on **Railway** using the included Dockerfile. The PostgreSQL database is hosted on **Neon** (serverless PostgreSQL with connection pooling).
+The backend is deployed on **Render** using the included Dockerfile. The PostgreSQL database is hosted on **Neon** (serverless PostgreSQL with connection pooling).
 
 **Stripe Webhook Setup**
 
 For Stripe to reach the webhook endpoint in production, register the following URL in your Stripe Dashboard under **Developers → Webhooks**:
 
 ```
-https://stay-grid.up.railway.app/api/v1/webhook/payment
+https://staygrid-b02y.onrender.com/api/v1/webhook/payment
 ```
 
-Select the `checkout.session.completed` event. Copy the signing secret and set it as `STRIPE_WEBHOOK_SECRET` in your Railway environment variables.
+Select the `checkout.session.completed` event. Copy the signing secret and set it as `STRIPE_WEBHOOK_SECRET` in your Render environment variables.
 
 > For local testing with Stripe webhooks, use the [Stripe CLI](https://stripe.com/docs/stripe-cli):
 > ```bash
