@@ -519,7 +519,7 @@ jwt.jwtSecretKey=<your-256-bit-secret-key>
 stripe.secret.key=sk_test_...
 stripe.webhook.secret=whsec_...
 
-frontend.url=http://localhost:5173
+frontend.url=https://stay-grid.vercel.app
 ```
 
 **3. Build and run**
@@ -570,7 +570,7 @@ docker run -p 8080:8080 \
   -e JWT_SECRET_KEY=... \
   -e STRIPE_SECRET_KEY=... \
   -e STRIPE_WEBHOOK_SECRET=... \
-  -e FRONTEND_URL=http://localhost:5173 \
+  -e FRONTEND_URL=https://stay-grid.vercel.app \
   staygrid:latest
 ```
 
