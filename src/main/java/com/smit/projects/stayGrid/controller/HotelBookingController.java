@@ -25,9 +25,13 @@ public class HotelBookingController {
 
     @PostMapping("/{bookingId}/addGuests")
     @Operation(summary = "Add guest Ids to the booking", tags = {"Booking Flow"})
-    public ResponseEntity<BookingDto> addGuests(@PathVariable Long bookingId,
-                                                @RequestBody List<Long> guestIdList) {
-        return ResponseEntity.ok(bookingService.addGuests(bookingId, guestIdList));
+    public ResponseEntity<Void> addGuests(
+            @PathVariable Long bookingId,
+            @RequestBody List<Long> guestIdList) {
+
+        bookingService.addGuests(bookingId, guestIdList);
+
+        return ResponseEntity.noContent().build();
     }
 
     @PostMapping("/{bookingId}/payments")

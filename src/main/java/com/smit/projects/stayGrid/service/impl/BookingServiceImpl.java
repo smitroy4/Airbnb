@@ -100,57 +100,83 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    @org.springframework.transaction.annotation.Transactional
-    public BookingDto addGuests(Long bookingId, List<Long> guestIdList) {
+    @Transactional
+    public void addGuests(Long bookingId, List<Long> guestIdList) {
 
         log.info("Adding guests for booking with id: {}", bookingId);
 
-        Booking booking = bookingRepository.findById(bookingId).orElseThrow(() ->
-                new ResourceNotFoundException("Booking not found with id: "+bookingId));
+        Booking booking = bookingRepository.findById(bookingId)
+                .orElseThrow(() ->
+                        new ResourceNotFoundException(
+                                "Booking not found with id: " + bookingId));
+
         User user = getCurrentUser();
 
-        if (!user.equals(booking.getUser())) {
-            throw new UnAuthorizedException("Booking does not belong to this user with id: "+user.getId());
+        if (!user.getId().equals(booking.getUser().getId())) {
+            throw new UnAuthorizedException(
+                    "Booking does not belong to this user with id: " + user.getId());
         }
 
         if (hasBookingExpired(booking)) {
-            throw new IllegalStateException("Booking has already expired");
+            throw new IllegalStateException(
+                    "Booking has already expired");
         }
 
-        if(booking.getBookingStatus() != BookingStatus.RESERVED) {
-            throw new IllegalStateException("Booking is not under reserved state, cannot add guests");
+        if (booking.getBookingStatus() != BookingStatus.RESERVED) {
+            throw new IllegalStateException(
+                    "Booking is not under reserved state, cannot add guests");
         }
 
-        for (Long guestId: guestIdList) {
+        for (Long guestId : guestIdList) {
+
             Guest guest = guestRepository.findById(guestId)
-                    .orElseThrow(() -> new ResourceNotFoundException("Guest not found with id: "+guestId));
+                    .orElseThrow(() ->
+                            new ResourceNotFoundException(
+                                    "Guest not found with id: " + guestId));
+
             booking.getGuests().add(guest);
         }
 
         booking.setBookingStatus(BookingStatus.GUESTS_ADDED);
-        booking = bookingRepository.save(booking);
-        return modelMapper.map(booking, BookingDto.class);
+
+        bookingRepository.save(booking);
     }
 
     @Override
-    @org.springframework.transaction.annotation.Transactional
+    @Transactional
     public String initiatePayments(Long bookingId) {
-        Booking booking = bookingRepository.findById(bookingId).orElseThrow(
-                () -> new ResourceNotFoundException("Booking not found with id: "+bookingId)
-        );
-        User user = getCurrentUser();
-        if (!user.equals(booking.getUser())) {
-            throw new UnAuthorizedException("Booking does not belong to this user with id: "+user.getId());
+
+        Booking booking = bookingRepository.findById(bookingId)
+                .orElseThrow(() ->
+                        new ResourceNotFoundException(
+                                "Booking not found with id: " + bookingId));
+
+        User currentUser = getCurrentUser();
+
+        log.info("========== PAYMENT ==========");
+        log.info("Current User Id : {}", currentUser.getId());
+        log.info("Booking User Id : {}", booking.getUser().getId());
+        log.info("Booking Status  : {}", booking.getBookingStatus());
+        log.info("Booking Expired : {}", hasBookingExpired(booking));
+        log.info("=============================");
+
+        if (!currentUser.getId().equals(booking.getUser().getId())) {
+            throw new UnAuthorizedException(
+                    "Booking does not belong to this user with id: " + currentUser.getId());
         }
+
         if (hasBookingExpired(booking)) {
             throw new IllegalStateException("Booking has already expired");
         }
 
-        String sessionUrl = checkoutService.getCheckoutSession(booking,
-                frontendUrl+"/payments/" +bookingId +"/status",
-                frontendUrl+"/payments/" +bookingId +"/status");
+        String sessionUrl = checkoutService.getCheckoutSession(
+                booking,
+                frontendUrl + "/payments/" + bookingId + "/status",
+                frontendUrl + "/payments/" + bookingId + "/status"
+        );
 
         booking.setBookingStatus(BookingStatus.PAYMENT_PENDING);
+
         bookingRepository.save(booking);
 
         return sessionUrl;
@@ -190,7 +216,7 @@ public class BookingServiceImpl implements BookingService {
                 () -> new ResourceNotFoundException("Booking not found with id: "+bookingId)
         );
         User user = getCurrentUser();
-        if (!user.equals(booking.getUser())) {
+        if (!user.getId().equals(booking.getUser().getId())) {
             throw new UnAuthorizedException("Booking does not belong to this user with id: "+user.getId());
         }
 
@@ -242,7 +268,7 @@ public class BookingServiceImpl implements BookingService {
 
         log.info("Getting all booking for the hotel with ID: {}", hotelId);
 
-        if(!user.equals(hotel.getOwner())) throw new AccessDeniedException("You are not the owner of hotel with id: "+hotelId);
+        if(!user.getId().equals(hotel.getOwner().getId())) throw new AccessDeniedException("You are not the owner of hotel with id: "+hotelId);
 
         List<Booking> bookings = bookingRepository.findByHotel(hotel);
 
@@ -260,7 +286,7 @@ public class BookingServiceImpl implements BookingService {
 
         log.info("Generating report for hotel with ID: {}", hotelId);
 
-        if(!user.equals(hotel.getOwner())) throw new AccessDeniedException("You are not the owner of hotel with id: "+hotelId);
+        if(!user.getId().equals(hotel.getOwner().getId())) throw new AccessDeniedException("You are not the owner of hotel with id: "+hotelId);
 
         LocalDateTime startDateTime = startDate.atStartOfDay();
         LocalDateTime endDateTime = endDate.atTime(LocalTime.MAX);
