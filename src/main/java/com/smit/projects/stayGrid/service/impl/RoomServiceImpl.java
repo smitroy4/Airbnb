@@ -14,6 +14,9 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
@@ -33,6 +36,12 @@ public class RoomServiceImpl implements RoomService {
     private final InventoryService inventoryService;
 
     @Override
+    @Caching(evict = {
+            @CacheEvict(value = "hotel", key = "#id"),
+            @CacheEvict(value = "admin-hotels", allEntries = true),
+            @CacheEvict(value = "hotel-info", allEntries = true),
+            @CacheEvict(value = "hotel-search", allEntries = true)
+    })
     public RoomDto createNewRoom(Long hotelId, RoomDto roomDto) {
         log.info("Creating to creating a new room in hotel with id: {}", hotelId);
         Hotel hotel = hotelRepository.findById(hotelId)
@@ -58,6 +67,7 @@ public class RoomServiceImpl implements RoomService {
 
 
     @Override
+    @Cacheable("room")
     public RoomDto getRoomById(Long id) {
         log.info("Getting room with id: {}", id);
         Room room = roomRepository
@@ -69,6 +79,12 @@ public class RoomServiceImpl implements RoomService {
 
     @Override
     @Transactional
+    @Caching(evict = {
+            @CacheEvict(value = "hotel", key = "#id"),
+            @CacheEvict(value = "admin-hotels", allEntries = true),
+            @CacheEvict(value = "hotel-info", allEntries = true),
+            @CacheEvict(value = "hotel-search", allEntries = true)
+    })
     public void deleteRoomById(Long id) {
         log.info("Deleting room with id: {}", id);
         Room room = roomRepository
@@ -87,6 +103,7 @@ public class RoomServiceImpl implements RoomService {
 
     @Override
     @Transactional
+    @Cacheable("hotel-rooms")
     public List<RoomDto> getRoomsByHotelId(Long hotelId) {
         log.info("Getting rooms for hotel with id: {}", hotelId);
         Hotel hotel = hotelRepository.findById(hotelId)
@@ -98,6 +115,12 @@ public class RoomServiceImpl implements RoomService {
 
     @Override
     @Transactional
+    @Caching(evict = {
+            @CacheEvict(value = "hotel", key = "#id"),
+            @CacheEvict(value = "admin-hotels", allEntries = true),
+            @CacheEvict(value = "hotel-info", allEntries = true),
+            @CacheEvict(value = "hotel-search", allEntries = true)
+    })
     public RoomDto updateRoomById(Long hotelId, Long roomId, RoomDto roomDto) {
         log.info("Updating the room with ID: {}", roomId);
         Hotel hotel = hotelRepository

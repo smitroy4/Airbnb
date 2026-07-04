@@ -14,6 +14,9 @@ import com.smit.projects.stayGrid.service.InventoryService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -36,6 +39,7 @@ public class HotelServiceImpl implements HotelService {
     private final InventoryRepository inventoryRepository;
 
     @Override
+    @CacheEvict(value = "admin-hotels", allEntries = true)
     public HotelDto createNewHotel(HotelDto hotelDto) {
         log.info("Creating a new hotel with name: {}", hotelDto.getName());
         Hotel hotel = modelMapper.map(hotelDto, Hotel.class);
@@ -50,6 +54,7 @@ public class HotelServiceImpl implements HotelService {
     }
 
     @Override
+    @Cacheable("hotel")
     public HotelDto getHotelById(Long id) {
         log.info("Getting the hotel with ID: {}", id);
         Hotel hotel = hotelRepository
@@ -65,6 +70,12 @@ public class HotelServiceImpl implements HotelService {
     }
 
     @Override
+    @Caching(evict = {
+            @CacheEvict(value = "hotel", key = "#id"),
+            @CacheEvict(value = "admin-hotels", allEntries = true),
+            @CacheEvict(value = "hotel-info", allEntries = true),
+            @CacheEvict(value = "hotel-search", allEntries = true)
+    })
     public HotelDto updateHotelById(Long id, HotelDto hotelDto) {
         log.info("Updating the hotel with ID: {}", id);
         Hotel hotel = hotelRepository
@@ -84,6 +95,12 @@ public class HotelServiceImpl implements HotelService {
 
     @Override
     @Transactional
+    @Caching(evict = {
+            @CacheEvict(value = "hotel", key = "#id"),
+            @CacheEvict(value = "admin-hotels", allEntries = true),
+            @CacheEvict(value = "hotel-info", allEntries = true),
+            @CacheEvict(value = "hotel-search", allEntries = true)
+    })
     public void deleteHotelById(Long id) {
         Hotel hotel = hotelRepository
                 .findById(id)
@@ -104,6 +121,12 @@ public class HotelServiceImpl implements HotelService {
 
     @Override
     @Transactional
+    @Caching(evict = {
+            @CacheEvict(value = "hotel", key = "#id"),
+            @CacheEvict(value = "admin-hotels", allEntries = true),
+            @CacheEvict(value = "hotel-info", allEntries = true),
+            @CacheEvict(value = "hotel-search", allEntries = true)
+    })
     public void activateHotel(Long hotelId) {
         log.info("Activating the hotel with ID: {}", hotelId);
         Hotel hotel = hotelRepository
@@ -150,6 +173,7 @@ public class HotelServiceImpl implements HotelService {
     }
 
     @Override
+    @Cacheable("admin-hotels")
     public List<HotelDto> getAllHotels() {
         User user = getCurrentUser();
         log.info("Getting all hotels for the admin user with ID: {}", user.getId());

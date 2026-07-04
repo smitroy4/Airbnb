@@ -7,6 +7,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 
 @SpringBootApplication
 @EnableScheduling
+@EnableCaching
 public class StayGridApplication {
 
 	public static void main(String[] args) {

@@ -13,6 +13,9 @@ import com.smit.projects.stayGrid.service.InventoryService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -66,6 +69,10 @@ public class InventoryServiceImpl implements InventoryService{
     }
 
     @Override
+    @Cacheable(
+            value = "hotel-search",
+            key = "#hotelSearchRequest.city + '-' + #hotelSearchRequest.startDate + '-' + #hotelSearchRequest.endDate + '-' + #hotelSearchRequest.roomsCount + '-' + #hotelSearchRequest.page + '-' + #hotelSearchRequest.size"
+    )
     public Page<HotelPriceResponseDto> searchHotels(HotelSearchRequest hotelSearchRequest) {
         log.info("Searching hotels for {} city, from {} to {}", hotelSearchRequest.getCity(), hotelSearchRequest.getStartDate(), hotelSearchRequest.getEndDate());
         Pageable pageable = PageRequest.of(hotelSearchRequest.getPage(), hotelSearchRequest.getSize());
@@ -103,6 +110,10 @@ public class InventoryServiceImpl implements InventoryService{
 
     @Override
     @Transactional
+    @Caching(evict = {
+            @CacheEvict(value = "hotel-search", allEntries = true),
+            @CacheEvict(value = "hotel-info", allEntries = true)
+    })
     public void updateInventory(Long roomId, UpdateInventoryRequestDto updateInventoryRequestDto) {
         log.info("Updating All inventory by room for room with id: {} between date range: {} - {}", roomId,
                 updateInventoryRequestDto.getStartDate(), updateInventoryRequestDto.getEndDate());
