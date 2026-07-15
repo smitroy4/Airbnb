@@ -20,7 +20,7 @@
 | Resource | URL |
 |---|---|
 | Frontend Application | [https://stay-grid.vercel.app](https://stay-grid.vercel.app) |
-| Backend API (Render) | [https://staygrid-b02y.onrender.com](https://staygrid-b02y.onrender.com/api/v1) |
+| Backend API (Render) | [https://staygrid-b02y.onrender.com/api/v1](https://staygrid-b02y.onrender.com/api/v1) |
 
 ---
 
