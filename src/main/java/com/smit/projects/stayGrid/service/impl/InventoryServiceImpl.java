@@ -69,10 +69,6 @@ public class InventoryServiceImpl implements InventoryService{
     }
 
     @Override
-    @Cacheable(
-            value = "hotel-search",
-            key = "#hotelSearchRequest.city + '-' + #hotelSearchRequest.startDate + '-' + #hotelSearchRequest.endDate + '-' + #hotelSearchRequest.roomsCount + '-' + #hotelSearchRequest.page + '-' + #hotelSearchRequest.size"
-    )
     public Page<HotelPriceResponseDto> searchHotels(HotelSearchRequest hotelSearchRequest) {
         log.info("Searching hotels for {} city, from {} to {}", hotelSearchRequest.getCity(), hotelSearchRequest.getStartDate(), hotelSearchRequest.getEndDate());
         Pageable pageable = PageRequest.of(hotelSearchRequest.getPage(), hotelSearchRequest.getSize());
