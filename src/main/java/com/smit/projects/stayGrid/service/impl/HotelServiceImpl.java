@@ -122,7 +122,7 @@ public class HotelServiceImpl implements HotelService {
     @Override
     @Transactional
     @Caching(evict = {
-            @CacheEvict(value = "hotel", key = "#id"),
+            @CacheEvict(value = "hotel", key = "#hotelId"),
             @CacheEvict(value = "admin-hotels", allEntries = true),
             @CacheEvict(value = "hotel-info", allEntries = true),
             @CacheEvict(value = "hotel-search", allEntries = true)

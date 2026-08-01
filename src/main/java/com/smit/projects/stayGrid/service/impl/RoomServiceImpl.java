@@ -37,7 +37,7 @@ public class RoomServiceImpl implements RoomService {
 
     @Override
     @Caching(evict = {
-            @CacheEvict(value = "hotel", key = "#id"),
+            @CacheEvict(value = "hotel", key = "#hotelId"),
             @CacheEvict(value = "admin-hotels", allEntries = true),
             @CacheEvict(value = "hotel-info", allEntries = true),
             @CacheEvict(value = "hotel-search", allEntries = true)
@@ -80,7 +80,7 @@ public class RoomServiceImpl implements RoomService {
     @Override
     @Transactional
     @Caching(evict = {
-            @CacheEvict(value = "hotel", key = "#id"),
+            @CacheEvict(value = "hotel", allEntries = true),
             @CacheEvict(value = "admin-hotels", allEntries = true),
             @CacheEvict(value = "hotel-info", allEntries = true),
             @CacheEvict(value = "hotel-search", allEntries = true)
@@ -116,7 +116,7 @@ public class RoomServiceImpl implements RoomService {
     @Override
     @Transactional
     @Caching(evict = {
-            @CacheEvict(value = "hotel", key = "#id"),
+            @CacheEvict(value = "hotel", key = "#hotelId"),
             @CacheEvict(value = "admin-hotels", allEntries = true),
             @CacheEvict(value = "hotel-info", allEntries = true),
             @CacheEvict(value = "hotel-search", allEntries = true)
